@@ -1,0 +1,228 @@
+
+
+-----------------2-------------------INTODUCTION: EXECUTION-CONTEXT
+
+##NOTE THAT:: everythings in js happens inside in execution context.
+
+    execution-context has two component:
+    1) memory component(memory-enviroment):
+        memory component has the variable and function as key-value pair
+    
+    2) code component(thread of execution)
+        where the code is execute
+
+##NOTE THAT:: js is syncronous single threaded language
+    single threaded:: js run only run one cmd at a time
+    syncronous:: js run first line first then move the second line
+
+
+-----------------3-------------------DIVE INTO DEEP: EXECUTION-CONTEXT AND CALL-STACK 
+
+##NOTE THAT:: we kw that everythings that may happens in js inside the execution-context.
+so we will make the simple program and run it and see it that how the execution-context made and work behind the scene 
+
+    var n= 2;
+    function sqare (num) {
+        var ans = num*num;
+        return ans;
+    }
+
+    var sqare2 = sqare(n);
+    var sqare4 = sqare(4);
+
+--js will meke the execution-context(the word(execution-context) we use is container)to run our code.
+--this container has two component 1)memory-component(also known as memory-enviroment or memory-creation-phase(first-phase)) 2)code-component(also known as thread of execution or execution-phase(second-phase))
+
+
+  FIRST-PHASE
+--first of all js will go through all our code and allocate the memory for all the variable and function in memory-creation-phase:
+Ex::(for above code):
+    ##NOTE THAT:: this is our memory creation phase(first-phase).
+    var a: undefined; 
+    sqare: sqare (num) {
+        var ans = num*num;
+        return ans;
+    }  
+    var sqare2 = undefined;
+    var sqare4 = undefined; 
+
+    //NOTE THAT: for variable value's it assign the undefined as a place-holder (as a key-value pair),
+    //and for function it assign the all function scope (as a key-value pair)
+
+  SECOND-PHASE
+--now js will again go through the all js code for execute the code.
+ a)-if it sees the variable it replace the undefined to their actual variable.
+ b)-if it see the function-declaration it leave it untouch.
+ c)-if it sees the function-execution(in our case sqare(n) and sqare(4)) it behave diffrently, lets undestand step by step,
+    1)->first we have to known that function is heart of js.
+    2)->we kw that our whole program will execute inside the execution-context.
+    3)->function is also known as program(a mini program), and we know that program is execute inside the execution-context, that means whenever the any function run means a min program run for that a new execution-context will made for it under the whole program's execution-context.
+    4)and this execution-context will behave same as our privior whole-execution-context(but you should have to know that memory-creation phase and execution-phase for this function will be the BLOCK-OF-FUNCTION)
+    5)means in memory-creation-phase in the execution-context for this mini program(function), memory will be allocate for function's parameter and function's local variable, and assigned (as a key value pair) the undefined as place-holder(only for variable), and local function all function body will be assign (as a key value pair) but in our case we dont have any local function.
+      (in our code):: sqare (num= undefined) {
+            var ans = undefined;
+            return ans;
+        }
+    6)and in execution-phase in the execution-context for this mini program(function), code is execute line by line same as whole-execution-context.
+        ->if pass the argument value, it replace the (num= undefined ) to pssed value in memory.
+        ->(and= undefined) will also replace after execution num*num which is 4.
+        ->if it sees the (return ans) it return back where it called (NOTE THAT for all variable and parameter and local function will be sees in the memory-phase of this function's execution-context) 
+         (in our code):: sqare (2) { 
+            var ans = 2*2;
+            return 4;
+        }  
+    NOTE THAT(imp):: once the whole the function are execute, the execution-context of the function will deleted.
+    
+ 
+ Ex::(for above code):
+        var a: 2; //refer the point a) or SECOND-PHASE
+        sqare: sqare (num) { //refer the point b) or SECOND-PHASE
+            var ans = num*num;
+            return ans;
+        }  
+        var sqare2 = 4; //refer the point c) or SECOND-PHASE
+        var sqare4 = sqare(4); //refer the point c) or SECOND-PHASE
+
+d)- NOTE THAT(imp):: once the whole the program are execute, the execution-context of the program will deleted.
+
+##NOTE THAT:: the execution-context which will be made when the first time program run called GLOBLE-EXECUTION-CONTEXT, apart from this the execution-context which will be made unsing function called the MINI-EXECUTION-CONTEXT(execution-context).
+
+WOWWWWW:::we know that its vary comlicate how the js manages lot of things(means make globle-execution-context. if sees the function make the another execution-context, it may be possibility once upon time there are lot of execution-context above GLOBLE-EXECUTION-CONTEXT). now the quation are arise how the js manage these comlicate things, the answer is CALL-STACK. the CALL-STACK manage the execution-context.
+
+## let dive into call-stack deep more::
+## CALL-STACK::
+    -if you run the program first time a GLOBLE-EXECUTION-CONTEXT are made and js engin will push the this GBL into call-stack.
+    -if js engin sees the function-call, will make another execution-context and push into the call stack(above the GBL) and so on.
+    -once the function execution done it pop-out from the call-stack.
+    -if all function execution done, at that time GBL also pop-out. 
+
+
+-----------------4-------------------HOISTING DEEP-UNDERSTANDIN
+    
+##we know that variable and function has memory before execution the code where memory-creation-phase undefined will be assigned for the variable and function-body will be assigned for the function in memory-creation-phase.
+
+let take example program:
+
+scenerio_1:
+
+    console.log(x); //it will be accessed bcs we already reserved the space in creation-phase
+    console.log(getName()) //it will be accessed bcs we already reserved the space in creation-phase
+
+    var x = 10;
+    function getName(){
+        console.log('variable and function-declaration are hoisted');
+    }
+
+did you see, we using x and getName before initialize this, in other programming language we cant do that, but in js it is possible bcs we kw that before execution of the code we know that variable and function has memory before execution the code where memory-creation-phase undefined will be assigned for the variable and function-body will be assigned for the function in memory-creation-phase, and guys this is called HOISTING.
+
+for our code x and function are globly declared so they are into the GAC, where the memory of the memory-creation-phase point to GLOBLE-OBJECT(window or this), so the x and function alse into the GLOBLE-OBJECT.
+
+scenerio_2:
+
+    console.log(x); 
+    console.log(getName) 
+
+    function getName(){
+        console.log('variable and function-declaration are hoisted');
+    }
+
+    if we write somthing like this it will through an err bcs in memory-creation phase x are not in the code present and the memory of the execution-context doest have the x value, that is y it through the reference(not defined) err. and this is diff between undefined and not defined
+
+scenerio_3:
+
+        console.log(getName) // in globle-scop, you will get -->getName: undefined, it print undefined
+        console.log(getName()) // in globle-scop, you will get -->getName: undefined, it print --> Uncaught TypeError: getName is not a function, do you know y type err bcs we declare the getName using var keywork and we use as a function, so it give the type err, bcs type of getName is variable not function
+
+        var getName =() =>{
+        console.log('variable and function-declaration are hoisted');
+        }
+
+        if we write the function using arrow function and accesse before initalize, then it will through an err, do you kw y, bcs we make the arrow function using var keyword and at the point getName is a variable and we know that in a memory-creation time getName will be assigned undefined not a whole function body
+
+scenerio_4(this is only for call stack):
+
+        /**GAC are made and push into the call-stack(which is indicate as a anonimous).
+
+        //put debugger here
+        console.log(x); //it will be accessed bcs we already reserved the space in creation-phase
+
+        var x = 10;
+        function getName(){
+            //put debugger here
+            console.log('variable and function-declaration are hoisted');
+        }
+
+      //put the debugger here
+      /** another execution-context are made for this function and fush into the call-stack
+       getName()
+
+       /**once the function execution done it pop-out from the call-stack.
+    -if all function execution done, at that time GBL also pop-out. 
+
+
+-----------------5-------------------FUNCTION DEEP-UNDERSTANDIN
+
+##let's meke function's and see what happens if we run the code.
+
+var x =1;
+a();
+b();
+console.log(x);
+
+function a(){
+    var a =10;
+    console.log(a);
+}
+
+function b(){
+    var b =100;
+    console.log(b);
+}
+
+//for GAC
+-if we run the program a GAC are made(this GAC are pushed into the call-stack) and it has two component. 1)memory-creation-phase 2)code-execution-phase.
+first-phase:
+-befor execution the code memory-creation-phase take place, in which memory are reserved for all our globle variable(undefined will be defined) and function(whole function body assigned).
+second-phase:
+-in a execution-phase undefined will be replace to their actual value(in case of variable) 
+-at this position call stack and has 1 execution-context(GAC) and control point to this GAC.
+-NOTE THAT:: at this point, in memory has one object that is globle, and globle is a plase where our all globle variable and function are register at the time of memory-creation-phase, so we can use any globle variable, function in a GAC. 
+
+//in code-execution phase of GAC, when control goes to 2nd line:
+//function execution-component: //for a()
+-if js engin sees the function call then make another execution-context for only this function and push into the call-stack.
+-NOTE THAT this execution-context is vary much limited or restricted to this function.
+-so in memory-creation-phase, memory will be reserved only its local variable, parameter and function.
+-and the in execution-phase, when it needs to access any variable it sees their lexical scope first.
+-first line of the execution-phase: so a is in the local scope which will be assigned 10 that is replace by the undefined we kw that.
+-second line of the execution-phase: log into the console x(this x will sees into local scope first, and lexical scope after)
+-so the console print--->10
+-at this position call-stack has two execution-context(GAC, a) and control point to this a execution-context.
+-NOTE THAT:: at this point, in memory has two object that is local and globle, and globle is a plase where our all globle variable and function are register at the time of memory-creation-phase, whereas this local object has the function local variable and function, so we can use any globle variable, function and local variable's and function in this function's execution-context. 
+
+//in code-execution phase of GAC, when control goes to 3nd line:
+//function execution-component: //for b()
+-once the execution complete for a(), at that time related execution-context pop-out. and at this position call-stack has only one execution-context that is GAC.
+-if js engin sees the function call then make another execution-context for only this function and push into the call-stack.
+-NOTE THAT this execution-context is vary much limited or restricted to this function.
+-so in memory-creation-phase, memory will be reserved only its local variable, parameter and function.
+-and the in execution-phase, when it needs to access any variable it sees their lexical scope first.
+-first line of the execution-phase: so x is in the local scope which will be assigned 100 that is replace by the undefined we kw that.
+-second line of the execution-phase: log into the console x(this x will sees into local scope first, and lexical scope after)
+-so the console print--->100
+-at this position call-stack has two execution-context(GAC, b) and control point to this b execution-context.
+-NOTE THAT:: at this point, in memory has two object that is local and globle, and globle is a plase where our all globle variable and function are register at the time of memory-creation-phase, whereas this local object has the function local variable and function, so we can use any globle variable, function and local variable's and function in this function's execution-context. 
+-once the execution complete for b(), at that time related execution-context pop-out.
+
+-if control of the code-execution GAC goes to the third line it cansole the x value( the x value sees into the GAC)
+-so the console print --->1 
+
+-NOTE THAT:: once the execution complete for GAC, at that time GAC also pop-out.
+-NOTE THAT:: call-stack is a vary essential part of the js engin, bcs it maintain the execution-context.
+-"AND IT MAINTAIN THE ORDER OF THE EXECUTION-CONTEXT" means first come first run and pop it out.
+
+
+RESULT::
+    SO WE HAVE INTO THE CONSOLE-->10
+                                  100
+                                  1  
